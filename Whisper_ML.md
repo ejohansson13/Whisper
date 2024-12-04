@@ -1,14 +1,38 @@
-[Whisper](https://arxiv.org/pdf/2212.04356), released in 2022, quickly grew to be one of the most popular ASR models and demonstrated the efficacy of the [Transformer](https://arxiv.org/pdf/1706.03762) model across media, introducing it to a new domain: speech. Whisper's release was intended to monitor the empirical impact of large, weakly-supervised data on an off-the-shelf model architecture. Previous speech recognition models had either been trained on large, unsupervised data, lacking quality, or small, gold-standard training data, lacking quantity. The novel dataset size was referenced in the authors' begrudging apellation of their work: WSPSR (Whisper) standing for Web-scale Supervised Pretraining for Speech Recognition. 
+[Whisper](https://arxiv.org/pdf/2212.04356), released in 2022, quickly grew to be one of the most popular ASR models and demonstrated the efficacy of the [Transformer](https://arxiv.org/pdf/1706.03762) architecture across media, introducing it to a new domain: speech. Whisper's release was intended to monitor the empirical impact of large, weakly-supervised data on an off-the-shelf model architecture. Previous speech recognition models had either been trained on large, unsupervised data, lacking quality, or small, gold-standard training data, lacking quantity. The novel dataset size was referenced in the authors' begrudging apellation of their work: WSPSR (Whisper) standing for Web-scale Supervised Pretraining for Speech Recognition. 
 
 # Architecture
 
-## Attention
+As mentioned above, the intention behind Whisper was an empirical examination of the impact weakly supervised, web-scale data would have on speech recogition tasks. For this reason, the authors chose a simplified Transformer network and observed a direct correlation between model performance and model size. Below, we'll briefly summarize the Transformer model architecture, the attention mechanism, and their relevance to Whisper. 
 
-Reference to Transformer model origin being a result of Is Attention All You Need paper. 
+[Attention Is All You Need](https://arxiv.org/pdf/1706.03762), released in 2017, rapidly accelerated machine learning and artificial intelligence development. Five years later, its sequence-to-sequence efficacy led to OpenAI researchers utilizing it for speech. If you haven't read the original Attention paper, I'd urge you to read it over. It's a well-defined, detailed piece of literature explaining the author's motivations, experiments, and findings. It directly correlates to the Whisper architecture, with only a slight augmentation to allow audio compatibility.
 
 ## Encoder
 
+Describe encoder architecture (embedding and encodings), sublayers (layernorm, MHA, residual connection --> layernorm, FFN, residual connection). Make sure to specify that architecture follows almost directly from Attention is All You Need paper with distinction that layernorm comes before other operations in Whisper (after operations in original Attention paper). Mention that complexity of Whisper model is dependent on number of encoding blocks and include diagram demonstrating number of blocks each Whisper model has (tiny, base, small, medium, and large).
+
+Audio compatibility: encoder stem
+The first step for any encoder is transforming the input media into vectors. In the original Transformer architecture (dealing with text), this was implemented through tokenization and text embeddings. For audio, it entailed a log-mel-spectrogram and a convolutional audio stem. Log-mel spectrograms serve to better capture audio information than simple frequency information and the convolutional stem processes this information and transforms it to be dimensionally compatible with the remainder of the model architecture. Log-mel spectrograms are not critical to understanding  Whisper, but I've included a small section at the bottom of this page with more information on them, or you can check out [this video](https://www.youtube.com/watch?v=9GHCiiDLHQ4) which does a great job of explaining the concept.
+
+The encoder stem is made of two successive convolutional layers each followed by a GELU activation function. The first convolutional layer has a 3x3 kernel with stride of 1 and padding of 1. After passing through the subsequent activation function, the second convolutional layer also has a 3x3 kernel with a stride of 2 and padding of 1. Audio features pass through the second GELU function before progressing to the bulk of the audio encoder. A simple diagram is illustrated below.
+
+**Slides illustration here.**
+
+Sub-layers: same as Transformer, except layernorm comes first.
+Audio encoders implemented for Whisper are nearly identical 
+
+Complexity dependent on # of blocks --> Whisper table showing model sizes
+
 ## Decoder
+
+Describe decoder architecture (embedding and encodings), sublayers (layernorm, MHA, residual connection --> layernorm, cross-attention with encoder output, residual connection --> layernorm, FFN, residual connection). Mention that the base model has the same number of blocks as the original Attention Is All You Need paper. Additionally, Whisper has tiny model which has fewer blocks (4) than Attention Is All You Need paper. 
+
+Maybe something about how as the model gets bigger, hallucination becomes a potential issue, similar to LLMs.
+
+## Attention
+
+Reference to Transformer model origin being a result of Is Attention All You Need paper. Describe attention, why it was created (quantifying comaptibility value between query and key vector). How it's implemented (encoders and decoders interacting, query, keys, values, scaled dot-product attention, linear projections, masking for autoregressive generation). 
+
+Could venture into beam search decoding here. 
 
 # Engineering
 
