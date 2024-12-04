@@ -15,7 +15,9 @@ The first step for any encoder is transforming the input media into vectors. In 
 
 The encoder stem is made of two successive convolutional layers each followed by a GELU activation function. The first convolutional layer has a 3x3 kernel with stride of 1 and padding of 1. After passing through the subsequent activation function, the second convolutional layer also has a 3x3 kernel with a stride of 2 and padding of 1. Audio features pass through the second GELU function before progressing to the bulk of the audio encoder. A simple diagram is illustrated below.
 
-**Slides illustration here.**
+<p align="center" width="100%">
+  <img src="/Images/encoder_stem_diagram.png" width="100%">
+</p>
 
 Sub-layers: same as Transformer, except layernorm comes first.
 Audio encoders implemented for Whisper are nearly identical 
