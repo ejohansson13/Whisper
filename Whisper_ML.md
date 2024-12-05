@@ -2,15 +2,13 @@
 
 # Architecture
 
-As mentioned above, the intention behind Whisper was an empirical examination of the impact weakly supervised, web-scale data would have on speech recogition tasks. For this reason, the authors chose a simplified Transformer network and observed a direct correlation between model performance and model size. Below, we'll briefly summarize the Transformer model architecture, the attention mechanism, and their relevance to Whisper. 
+As mentioned above, the intention behind Whisper was an empirical examination of the impact weakly supervised, web-scale data would have on speech recogition tasks. For this reason, the authors chose a simplified Transformer network and observed a direct correlation between model performance and model size. Below, we'll briefly summarize the model architecture and its similarity to the original Transformer architecture. For those already familiar with the Transformer model, the encoder and decoder are made up of [pre-activation residual blocks](https://arxiv.org/pdf/1603.05027).
 
 [Attention Is All You Need](https://arxiv.org/pdf/1706.03762), released in 2017, rapidly accelerated machine learning and artificial intelligence development. Five years later, its sequence-to-sequence efficacy led to OpenAI researchers utilizing it for speech. If you haven't read the original Attention paper, I'd urge you to read it over. It's a well-defined, detailed piece of literature explaining the author's motivations, experiments, and findings. It directly correlates to the Whisper architecture, with only a slight difference to allow audio compatibility.
 
 ## Encoder
 
-Describe encoder architecture (embedding and encodings), sublayers (layernorm, MHA, residual connection --> layernorm, FFN, residual connection). Make sure to specify that architecture follows almost directly from Attention is All You Need paper with distinction that layernorm comes before other operations in Whisper (after operations in original Attention paper). Mention that complexity of Whisper model is dependent on number of encoding blocks and include diagram demonstrating number of blocks each Whisper model has (tiny, base, small, medium, and large).
-
-The first step for any encoder is transforming the input media into vectors. In the original Transformer architecture (text domain), this was implemented through tokenization and text embeddings. For audio, it entailed a log-mel-spectrogram and convolutional audio stem. Log-mel spectrograms serve to better capture audio information than simple frequency information and the convolutional stem processes this information and transforms it to be dimensionally compatible with the remainder of the model architecture. Log-mel spectrograms are not critical to understanding  Whisper, but I've included a small section at the bottom of this page with more information on them, or you can check out [this video](https://www.youtube.com/watch?v=9GHCiiDLHQ4) which does a great job of explaining the concept.
+The first step for any encoder is transforming the input media into vectors. In the original Transformer architecture (text domain), this was implemented through tokenization and text embeddings. For audio, it entailed a log-mel-spectrogram and convolutional audio stem. Log-mel spectrograms serve to better capture audio information than simple frequency information and the convolutional stem processes this information and transforms it to be dimensionally compatible with the remainder of the model architecture. Log-mel spectrograms are not critical to understanding  Whisper, but I've included a small section at the bottom of this page with more information on them, or you can check out [this video](https://www.youtube.com/watch?v=9GHCiiDLHQ4) which does a great job of explaining the concept. 
 
 The encoder stem is made of two successive convolutional layers each followed by a GELU activation function. The first convolutional layer has a 3x3 kernel with stride of 1 and padding of 1. After passing through the subsequent activation function, the second convolutional layer also has a 3x3 kernel with a stride of 2 and padding of 1. Audio features pass through the second GELU function before progressing to the bulk of the audio encoder. A simple diagram is illustrated below.
 
@@ -18,19 +16,16 @@ The encoder stem is made of two successive convolutional layers each followed by
   <img src="/Images/encoder_stem_diagram.png" width="100%">
 </p>
 
-Something about positional encoding.
-
-The stem output is summed with the pertinent positional information before progressing to the bulk of the encoder block, seen below. Identical to the original Transformer architecture, these encoder blocks contain two sub-layers. A residual connection exists around each sub-layer, represented in the diagram below as the green arrows below the operational blocks. In the first sub-layer, audio features are immediately normalized before multi-head self-attention is applied. The second sub-layer is a feed-forward network, with two linear projections sandwiching a GELU activation function. The output of each encoder block goes to two locations. First, it feeds into the next block, serving as the adjacent encoder block's input. Second, it serves as the key and value vectors for the cross-attention mechanism in the corresponding decoding block. More details on self- and cross-attention will be provided later.
+Like any attention-dependent neural network, the relevant embeddings have to understand their relative input position. Whisper uses a fixed sinusoidal positional encoding for the audio encoder. The stem output is summed with the pertinent position information before progressing to the bulk of the encoder block, seen below. Identical to the original Transformer architecture, these encoder blocks contain two sub-layers. A residual connection exists around each sub-layer, represented in the diagram below as the green arrows below the operational blocks. In the first sub-layer, audio features are immediately normalized before multi-head self-attention is applied. The second sub-layer is a feed-forward network, with two linear projections sandwiching a GELU activation function. The output of each encoder block goes to two locations. First, it feeds into the next block, serving as the adjacent encoder block's input. Second, it serves as the key and value vectors for the cross-attention mechanism in the corresponding decoding block. More details on self- and cross-attention will be provided later.
 
 <p align="center" width="100%">
   <img src="/Images/encoder_diagram.png" width="100%">
 </p>
 
-Complexity dependent on # of blocks --> Whisper table showing model sizes; reference base model has same # of blocks as original Transformer architecture
-Stacking the blocks described above determines the model complexity. 
+Stacking the blocks described above determines the model complexity. Larger, more complex models lead to better performance. Interestingly,  researchers were able to create a competent model with only 4 encoder and decoder blcoks each, fewer than the original Transformer architecture which contained 6. Researchers observed the best-performing model required 32 encoding and decoding blocks, but offered optimal transcription, translation, and language recognition. The different model sizes can be seen below. 
 
 <p align="center" width="100%">
-  <img src="/Images/model_sizes.png" width="100%">
+  <img src="/Images/model_sizes.png" width="50%">
 </p>
 
 ## Decoder
