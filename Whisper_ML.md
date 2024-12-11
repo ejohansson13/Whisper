@@ -53,7 +53,7 @@ Decoder's role: convert audio features into coherent, decodable text. Decoder au
 Attention serves as a quantification of the compatibility between vector representations of information. Given a query vector and a set of key-value vector pairs, attention assigns a weight to each value. Each value's respective weight is a measure of the congruity between the corresponding query and key. There are a few different attention implementations, but the most popular (and the one implemented for Transformer and Whisper) is scaled dot-product attention. The scaled dot-product attention equation can be seen below.
 
 <p align="center" width="100%">
-  <img src="/Images/sdpa_attn_equation.png" width="80%">
+  <img src="/Images/sdpa_attn_equation.png" width="50%">
 </p>
 
 ### Self-Attention
