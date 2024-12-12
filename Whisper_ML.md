@@ -22,13 +22,6 @@ Like any attention-dependent neural network, the relevant embeddings have to und
   <img src="/Images/encoder_diagram.png" width="100%">
 </p>
 
-**Might move below portion to decoder section**
-Stacking the blocks described above determines the model complexity. Larger, more complex models lead to better performance. Interestingly,  researchers were able to create a competent Whisper model with only 4 encoder and decoder blocks each, referred to as the Tiny model. The base Whisper model employed 6 encoding and decoding blocks, the same number as the original Transformer architecture. Researchers' most successful model required 32 encoding and decoding blocks, but offered optimal transcription, translation, and language recognition performance. The different model sizes can be seen below. Since the initial research paper was released, many additional model versions have been released. At time of writing (12/11/2024), large-v3-turbo is latest release. Large-v3-turbo optimized the decoder responsibility to only require 4 blocks, while maintaining 32 encoder blocks. Improve writing.
-
-<p align="center" width="100%">
-  <img src="/Images/model_sizes.png" width="50%">
-</p>
-
 Encoder's responsibility: encode log-mel spectrogram into audio features and coherent signals.
 
 ## Decoder
@@ -48,6 +41,12 @@ Maybe something about how as the model gets bigger, hallucination becomes a pote
 
 Decoder's role: convert audio features into coherent, decodable text. Decoder auto-regressively predicts the next token. 
 
+Stacking the blocks described above determines the model complexity. Larger, more complex models lead to better performance. Interestingly,  researchers were able to create a competent Whisper model with only 4 encoder and decoder blocks each, referred to as the Tiny model. The base Whisper model employed 6 encoding and decoding blocks, the same number as the original Transformer architecture. Researchers' most successful model required 32 encoding and decoding blocks, but offered optimal transcription, translation, and language recognition performance. The different model sizes can be seen below. Since the initial research paper was released, many additional model versions have been released. At time of writing (12/11/2024), large-v3-turbo is latest release. Large-v3-turbo optimized the decoder responsibility to only require 4 blocks, while maintaining 32 encoder blocks. Improve writing.
+
+<p align="center" width="100%">
+  <img src="/Images/model_sizes.png" width="50%">
+</p>
+
 ## Attention
 
 Attention serves as a quantification of the compatibility between vector representations of information. Given a query vector and a set of key-value vector pairs, attention assigns a weight to each value. Each value's respective weight is a measure of the congruity between the corresponding query and key. There are a few different attention implementations, but the most popular (and the one implemented for Transformer and Whisper) is scaled dot-product attention. The scaled dot-product attention equation can be seen below.
@@ -60,14 +59,11 @@ Attention serves as a quantification of the compatibility between vector represe
 
 Self-attention is implemented in both the encoder and decoder. It's designed to compound the network's understanding of the propagated signal. In the encoder, it takes as input the propagated query, key, and value vectors from the previous encoding block. The encoder attends to all of the positions from the previous layer. Allowing the network to understand all of the information, across all positions, helps it detect and emphasize the most important features. In Whisper, this means detecting and encoding the most important audio features.
 
-In the decoder, self-attention serves a slightly different role. It still receives as input the propagated signal from the previous decoding block. It still has access to the previous query, key, and value vectors, up to the current position. The auto-regression of Transformers hinges on predicting the next token based solely on the currently available information. Information ahead of the current position should not be affecting the current token output. That means that any information beyond the current position is masked out. The decoder utilizes the available information to predict the next token. In Whisper, this is sequentially decoding audio features to text. Given an audio sample of "The sly fox", the network decodes the encoded audio features of "sly" without being aware of the encoded features of "fox".
+In the decoder, self-attention is nearly identical. It attends to all positions up to the current position. The auto-regression of Transformers hinges on predicting the next token based on the currently available information. Information ahead of the current position should not affect the current token output, so information beyond the current position is masked out. The reason for this is that, at inference, all of the audio information is available so all of it should be attended to in the encoder. The model doesn't have the corresponding text transcription. Its responsibility is to sequentially predict each word corresponding to the provided audio. Since textual information is only provided up to the current token at inference time, it's trained with the same philosophy.
 
 ### Cross-Attention
 
-Cross-attention exists as the information crossover between the encoder and the decoder.
-
-
-Reference to Transformer model origin being a result of Is Attention All You Need paper. Describe attention, why it was created (quantifying comaptibility value between query and key vector). How it's implemented (encoders and decoders interacting, query, keys, values, scaled dot-product attention, linear projections, masking for autoregressive generation). 
+Cross-attention exists as the information crossover between the encoder and the decoder. It functions identically to self-attention, quantifying the similarity between a query and key vector. Unlike in self-attention, the query, key, and value vectors come from different locations. The decoding block provides the query vector, while the key and value vectors are supplied by the corresponding encoding block. This allows every position in the decoding vector to attend to every position in the encoding vector, providing key context, and bridging the gap between encoded audio features and autoregressively decoded text.
 
 
 Could venture into beam search decoding here. 
