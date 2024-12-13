@@ -44,7 +44,7 @@ The decoder's responsibility, as an audio-conditional language model, is to tran
   <img src="/Images/decoding_pipeline.png" width="100%">
 </p>
 
-The choice of decoding strategy can also inhibit hallucinations and repetitive text generation. Whisper implements two strategies: greedy decoding and beam search decoding. Greedy decoding endlessly generates the next most probable token. As a result, it is susceptible to repetitive looping. This can be controlled through temperature. Temperature is a parameter determining which token is selected next, ranging from 0 to 1. A temperature of 0 always selects the next most likely token, while 1 introduces variability into the token generation. Researchers implemented two thresholds to determine temperature: log probability and compression rate. Log probability is the cumulative sum of each token in the path's probability. Compression rate computes the ratio of repeated text in the generated sequence. Starting at a temperature of 0, if the generated tokens fall below either of the thresholds, it is increased by 0.2. Beam search decoding maintains the n most probable token generation paths, determined by log-probability. Ultimately, the decoding path with the highest log-probability is selected as the output. The authors employed beam-search decoding with n=5.
+The choice of decoding strategy can also inhibit hallucinations and repetitive text generation. Whisper implements two strategies: greedy decoding and beam search decoding. Greedy decoding endlessly generates the next most probable token. As a result, it is susceptible to repetitive looping. This can be controlled through temperature. Temperature is a parameter determining which token is selected next, ranging from 0 to 1. A temperature of 0 always selects the next most likely token, while 1 introduces variability into the token generation. Researchers implemented two thresholds to determine temperature: log probability and compression rate. Log probability is the cumulative sum of each token in the path's probability. Compression rate computes the ratio of repeated text in the generated sequence. Starting at a temperature of 0, if the generated tokens fall below either of the thresholds, it is increased by 0.2. Beam search decoding maintains the n most probable token generation paths, determined by log-probability. Ultimately, the decoding path with the highest log-probability is selected as the output. The authors employed beam search decoding with n=5.
 
 ## Attention
 
@@ -64,11 +64,12 @@ In the decoder, self-attention is nearly identical. It attends to all positions 
 
 Cross-attention exists as the information crossover between the encoder and the decoder. It functions identically to self-attention, quantifying the similarity between a query and key vector. Unlike in self-attention, the query, key, and value vectors come from different locations. The decoding block provides the query vector, while the key and value vectors are supplied by the corresponding encoding block. This allows every position in the decoding vector to attend to every position in the encoding vector, providing key context, and bridging the gap between encoded audio features and autoregressively decoded text.
 
-
-Could venture into beam search decoding here. 
-
 # Engineering
 
+The intention behind Whisper was monitoring the impact of large-scale weakly supervised data on an off-the-shelf sequence-to-sequence model architecture. Despite this simple idea, there's always more going on behind the curtain to create a successful model. Below, we'll take a look at some of the engineering details that OpenAI researchers implemented to create such a performant model. They'll be split into two sections: the first will focus on heuristics employed in the training stage to ensure successful pre-training and the second will focus on optimizations that popularized Whisper for its inference speed.
+
 ## Attention to Detail
+
+
 
 ## Optimizations
