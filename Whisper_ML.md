@@ -82,7 +82,13 @@ Machine learning is cyclic and iterative. Despite the steps taken by researchers
 
 ### Text Standardization
 
-### Something
+Researchers opted against including a text normalization step in their model training pipeline. They relied on the Transformer architecture successfully capturing the sequence-to-sequence relationship between audio and text. This allowed Whisper to capture the natural language text of transcripts and, given the size of the data, prevented Whisper from overfitting to any specific transcript formatting. The result was an audio speech recognition model capable of producing natural language from audio without being reliant on excessive standardization to produce coherent results.
+
+Of course, evaluation is a different game. Researchers manually inspected where their predicted transcriptions were penalized by word error rate (WER) and developed a text normalizer for inference to combat these issues. [Examples](https://github.com/openai/whisper/blob/main/whisper/normalizers/english.py) include identifying multi-digit numbers, converting spelled-out numbers to digits, and correcting currency symbols to natural language. Given the fear that their normalizer was overcorrecting vulnerabilities in Whisper's inference, researchers evaluated the same model's performance on the same evaluation sets with a different, [open-source text normalizer](https://www.pnas.org/doi/full/10.1073/pnas.1915768117#sec-3). Both results achieved roughly even scores. They found performance distinctions arose from trivialities in WER scoring, including allowing contractions and spelling out numerical or monetary expressions.
+
+### Text Conditioning for Audio-Conditional Decoder
+
+words.
 
 ## Inference Optimizations
 
