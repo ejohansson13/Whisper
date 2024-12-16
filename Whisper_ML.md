@@ -74,10 +74,25 @@ The intention behind Whisper was monitoring the impact of large-scale weakly sup
 
 Despite training on nearly 700k hours of audio, the authors ensured the quality of their data through multiple data filtering heuristics. Training the sequence-to-sequence task of audio transcription required a dataset of pairs containing the audio and the transcript. Researchers quickly detected that many of the transcripts found online were machine-generated outputs. Researchers ruled these out to prevent Whisper from learning "transcript-ese", mimicking the output of transcription models as opposed to natural language. By removing transcripts lacking punctuation, in all uppercase or in all lowercase, researchers ensured Whisper was trained only on human annotated transcripts. 
 
-Whisper was always intended to be multitask and multilingual. 
+Whisper was always intended to be multitask and multilingual. Providing quality multilingual data required additional tuning. Researchers used an earlier iteration of the Whisper model trained on a precursor version of the dataset solely to serve as a language detector. Given the pair of an audio and its transcript, researchers used the prototype model to detect the audio language and [CLD2](https://github.com/CLD2Owners/cld2) to detect the transcript language. If the two languages matched, the audio-transcript pair was included in the dataset as a sample of language X. If the two languages differed, but the transcript language was English, researchers included the pair as a training example for the X -> EN task, responsible for translating unknown audio to English. Otherwise, the audio and its transcript was discarded and not included in the dataset. Given the potential for overlapping transcriptions, maybe the Spanish transcript of the Lion King was exceedingly popular, the authors utilized fuzzy deduplication to reduce redundant duplicate transcripts. 
 
-Multitask training. Have to find langauge of audio. Separately trained detector.
+After training their prototype model, researchers analyzed data sources with the highest error rate and manually inspected these sources. This uncovered multiple partially or poorly transcribed texts the model was struggling to align with the corresponding audio. Additionally, it revealed low-quality machine generated transcripts that had escaped the authors' detection heuristics. After finding these low-quality transcripts, the authors removed them, improving their training data for the next model version.
+
+Machine learning is cyclic and iterative. Despite the steps taken by researchers to remove low-quality data from their training set, there's always more to be done. Researchers measured the relationship between the model’s performance in a certain language and the quantity of training data available in that language. They found that the model significantly underperformed in Welsh and, upon closer inspection, found that the majority of the 9k hours of Welsh audio the model was trained on was incorrectly labeled English audio. It emphasizes, once again, the bidirectional relationship between training data and models. For every newer, better, model iteration, there is always some way the data can be improved, leading to further model improvements, continuing the cycle. 
 
 ### Text Standardization
 
+### Something
+
 ## Inference Optimizations
+
+### First
+
+### Second
+
+### Log-Mel Spectrogram
+
+# Conclusion
+
+
+This section isn't really relevant to the paper, but I think it's parallel. The greatest success of OpenAI since its inception was its emphasis on zero-shot evaluation. If you study machine learning in academia, at least the way I learned it, you're given a training set and a testing set. Maybe you're asked to perform cross-validation and maybe you use a validation set but, odds are likely you're taught to split some quantity of data into 80% for training and 20% for testing (as an example, percentage splits can obviously vary). The problem with this, as [observed in section 3.3 of the Whisper paper](https://cdn.openai.com/papers/whisper.pdf#page=5) is that you're really evaluating the model's ability to capture in-distribution trends. All of the training and testing data, provided they come from the same source, come from the same distribution. Your model shouldn't be evaluated on its ability to capture in-distribution trends, especially when neural networks have demonstrated a [propensity for picking up data trends invisible to the human eye](https://arxiv.org/pdf/2103.00020). Robust models should generalize well to out-of-distribution data and that should be the basis of their evaluation. This is a significant motivation behind the evaluation of Whisper and underpins OpenAI's other model releases including Dall-E and GPT. This all obviously comes with the acknowledgement that it is researchers' responsibility to prevent data contamination and ensure that zero-shot evaluation is in fact evaluation on previously unseen data.
