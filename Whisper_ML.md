@@ -72,7 +72,11 @@ The intention behind Whisper was monitoring the impact of large-scale weakly sup
 
 ### Data Filtering
 
-Despite training on close to 700k hours of audio, researchers took 
+Despite training on nearly 700k hours of audio, the authors ensured the quality of their data through multiple data filtering heuristics. Training the sequence-to-sequence task of audio transcription required a dataset of pairs containing the audio and the transcript. Researchers quickly detected that many of the transcripts found online were machine-generated outputs. Researchers ruled these out to prevent Whisper from learning "transcript-ese", mimicking the output of transcription models as opposed to natural language. By removing transcripts lacking punctuation, in all uppercase or in all lowercase, researchers ensured Whisper was trained only on human annotated transcripts. 
+
+Whisper was always intended to be multitask and multilingual. 
+
+Multitask training. Have to find langauge of audio. Separately trained detector.
 
 ### Text Standardization
 
