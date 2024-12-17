@@ -88,15 +88,21 @@ Of course, evaluation is a different game. Researchers manually inspected where 
 
 ### Text Conditioning for Audio-Conditional Decoder
 
-words.
+As mentioned in the architecture section, the decoder is an audio-conditional language model. It conditions on audio features from the encoder via cross-attention implemented in the Transformer blocks. Researchers also conditioned the decoder on text to provide greater context than the 30s of audio available to the encoder. The previous text history was provided in the hopes it would help navigate unclear audio, especially if important context was outside of the current 30s window. Given a previous conversation regarding favorite books, it becomes much easier to decide if the spoken word was "read" or "red".
+
+Prompt engineering was quickly popularized as a method to deliver the best results from large language models (LLMs) and limit hallucinations. As the size of Whisper models grew, so did the potential for hallucination. Unreferenced in the paper, but available in the code repository, is an [option to prompt Whisper models](https://github.com/openai/whisper/blob/main/whisper/transcribe.py#L101), providing them a narrower scope to consider when transcribing audio. Functioning similar to prompting for LLMs, this offers the opportunity to provide a specific focus to the model in decoding the audio.
+
+Since many of the audio and transcript pairs the model was trained on included multiple speakers, these transcripts would often include speaker diarization. Given Whisper's training responsibility of accurately matching its transcription to the provided text, the model would also often attempt to predict speaker names. That's a nearly impossible challenge given sliding windows containing 30s of audio each. Naturally, this led to many incorrect guesses on the current speaker. Researchers recognized this shortcoming and finetuned the model on a subset of transcripts entirely lacking speaker annotations to train speaker diarization out of the model.
 
 ## Inference Optimizations
 
-### First
+### Hooks for Attention Caching
 
-### Second
+### Caching
 
-### Log-Mel Spectrogram
+### Just In Time (JIT)
+
+## Log-Mel Spectrogram
 
 # Conclusion
 
