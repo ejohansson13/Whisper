@@ -102,6 +102,8 @@ Caching is a core tenet of software engineering, utilized to accelerate repetiti
 
 ### Caching
 
+Whisper also uses Python's decorator functions
+
 ### Just In Time (JIT)
 
 # Log-Mel Spectrogram
