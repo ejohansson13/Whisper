@@ -8,7 +8,7 @@ As mentioned above, the intention behind Whisper was an empirical examination of
 
 ## Encoder
 
-The first step for any encoder is transforming the input media into vectors. In the original Transformer architecture (text domain), this was implemented through tokenization and text embeddings. For audio, it entailed a log-mel-spectrogram and convolutional audio stem. Log-mel spectrograms serve to better capture audio information than simple frequency information. The encoder's responsibility is encoding the input information into the most important audio features. The convolutional stem processes the log-mel spectrogram and transforms it to be dimensionally compatible with the remainder of the model architecture. Log-mel spectrograms are not critical to understanding  Whisper, but I've included a small section at the [bottom of this page](link here) with more information on them, or you can check out [this video](https://www.youtube.com/watch?v=9GHCiiDLHQ4) which does a great job of explaining the concept. 
+The first step for any encoder is transforming the input media into vectors. In the original Transformer architecture (text domain), this was implemented through tokenization and text embeddings. For audio, it entailed a log-mel-spectrogram and convolutional audio stem. Log-mel spectrograms serve to better capture audio information than simple frequency information. The encoder's responsibility is encoding the input information into the most important audio features. The convolutional stem processes the log-mel spectrogram and transforms it to be dimensionally compatible with the remainder of the model architecture. Log-mel spectrograms are not critical to understanding  Whisper, but I've included a small section at the [bottom of this page](#log-mel-spectrogram) with more information on them, or you can check out [this video](https://www.youtube.com/watch?v=9GHCiiDLHQ4) which does a great job of explaining the concept. 
 
 The encoder stem is made of two successive convolutional layers each followed by a GELU activation function. The first convolutional layer has a 3x3 kernel with stride of 1 and padding of 1. After passing through the subsequent activation function, the second convolutional layer also has a 3x3 kernel with a stride of 2 and padding of 1. Audio features pass through the second GELU function before progressing to the bulk of the audio encoder. A simple diagram is illustrated below.
 
@@ -88,7 +88,7 @@ Of course, evaluation is a different game. Researchers manually inspected where 
 
 ### Text Conditioning for Audio-Conditional Decoder
 
-As mentioned in the architecture section, the decoder is an audio-conditional language model. It conditions on audio features from the encoder via cross-attention implemented in the Transformer blocks. Researchers also conditioned the decoder on text to provide greater context than the 30s of audio available to the encoder. The previous text history was provided in the hopes it would help navigate unclear audio, especially if important context was outside of the current 30s window. Given a previous conversation regarding favorite books, it becomes much easier to decide if the spoken word was "read" or "red".
+As mentioned in the architecture section, the decoder is an audio-conditional language model. It conditions on audio features from the encoder via cross-attention implemented in the Transformer blocks. Researchers also conditioned the decoder on text to provide greater context than the 30s of audio available to the encoder. The previous text history was provided in the hopes it would help navigate unclear audio, especially if important context was outside of the current 30s window. Given a previous conversation regarding favorite books, it becomes much easier to decide if the spoken word was "read" or "red". Researchers also found that this text conditioning improved transcription performance with greedy decoding when temperature was below 0.5.
 
 Prompt engineering was quickly popularized as a method to deliver the best results from large language models (LLMs) and limit hallucinations. As the size of Whisper models grew, so did the potential for hallucination. Unreferenced in the paper, but available in the code repository, is an [option to prompt Whisper models](https://github.com/openai/whisper/blob/main/whisper/transcribe.py#L101), providing them a narrower scope to consider when transcribing audio. Functioning similar to prompting for LLMs, this offers the opportunity to provide a specific focus to the model in decoding the audio.
 
@@ -98,11 +98,13 @@ Since many of the audio and transcript pairs the model was trained on included m
 
 ### Hooks for Attention Caching
 
+Caching is a core tenet of software engineering, utilized to accelerate repetitive function calls by storing their results for easy access. Whisper caches attention mechanism computations that would otherwise be repeatedly recalculated. It implements this through [hooks](https://www.youtube.com/watch?v=syLFCVYua6Q) on attention layers within the model, allowing intermediate values to be recorded for future calls. The primary beneficiary here is cross-attention. Encoded audio features interact with their decoded tokenized counterparts through the cross-attention mechanism in the decoder blocks, serving as the key and value vectors to the decoder-supplied query vector. Encoded features are immutable. This means that, for each encoding block, the same computation is regularly recalculated to supply the key and value vectors for cross-attention. It would be recalculated for every sequential, auto-regressively predicted token. Recognizing this inefficiency, researchers cached the attention projection results, offering faster access and significantly accelerating inference.
+
 ### Caching
 
 ### Just In Time (JIT)
 
-## Log-Mel Spectrogram
+# Log-Mel Spectrogram
 
 # Conclusion
 
