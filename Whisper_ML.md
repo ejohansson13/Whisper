@@ -96,13 +96,15 @@ Since many of the audio and transcript pairs the model was trained on included m
 
 ## Inference Optimizations
 
-### Hooks for Attention Caching
+### Caching
 
 Caching is a core tenet of software engineering, utilized to accelerate repetitive function calls by storing their results for easy access. Whisper caches attention mechanism computations that would otherwise be repeatedly recalculated. It implements this through [hooks](https://www.youtube.com/watch?v=syLFCVYua6Q) on attention layers within the model, allowing intermediate values to be recorded for future calls. The primary beneficiary here is cross-attention. Encoded audio features interact with their decoded tokenized counterparts through the cross-attention mechanism in the decoder blocks, serving as the key and value vectors to the decoder-supplied query vector. Encoded features are immutable. This means that, for each encoding block, the same computation is regularly recalculated to supply the key and value vectors for cross-attention. It would be recalculated for every sequential, auto-regressively predicted token. Recognizing this inefficiency, researchers cached the attention projection results, offering faster access and significantly accelerating inference.
 
-### Caching
+@lru_cache
 
-Whisper also uses Python's decorator functions
+Whisper also uses Python's [functools library](https://docs.python.org/3/library/functools.html) to cache repeated calculations. 
+
+cached_property
 
 ### Just In Time (JIT)
 
