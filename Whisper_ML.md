@@ -110,7 +110,7 @@ offers an easy instruction to cache the most recent function return values until
 ```
 which caches a singular return value for a function without variable input. These two speed-ups are most effectively employed for Whisper's [tokenizer](https://github.com/openai/whisper/blob/main/whisper/tokenizer.py), responsible for converting numeric values to text. Caching the most frequently called tokens prevents Whisper from reconverting text to its numerical representation, effortlessly speeding up the decoding process.
 
-### Just In Time (JIT)
+### Just In Time (JIT) Compilation
 
 # Log-Mel Spectrogram
 
