@@ -112,7 +112,13 @@ which caches a singular return value for a function without variable input. Thes
 
 ### Just In Time (JIT) Compilation
 
+JIT compilers compile code during execution, dynamically analyzing and translating code for faster execution. Whisper employs two JIT compilation libraries for faster runtimes: Numba and Triton. Both are implemented through decorators denoting the function to be optimized. Numba specializes in accelerating numerical computations and requires pure Python syntax. It observes the first function call, allowing it to run normally, before optimizing all future calls for machine code translation. It integrates seamlessly with Numpy, affirming its efficacy for array operations and algorithms.
+
+[Triton](https://www.eecs.harvard.edu/~htk/publication/2019-mapl-tillet-kung-cox.pdf) was released in 2019 and quickly extended by OpenAI as an open-source GPU programming language for highly efficient Deep Learning primitives. Numba is intended for overall numerical efficiency, while Triton is explicitly designed for specialized matrix-multiplication kernels. Designed for Deep Learning applications, it offers a better understanding of GPU architecture and memory control, streamlining elementwise operations and accelerating custom kernels.
+
 # Log-Mel Spectrogram
+
+
 
 # Conclusion
 
