@@ -98,7 +98,7 @@ Since many of the audio and transcript pairs the model was trained on included m
 
 ### Caching
 
-Caching is a core tenet of software engineering, utilized to accelerate repetitive function calls by storing their results for easy access. Whisper caches attention mechanism computations that would otherwise be repeatedly recalculated. It implements this through [hooks](https://www.youtube.com/watch?v=syLFCVYua6Q) on attention layers within the model, allowing intermediate values to be recorded for future calls. The primary beneficiary here is cross-attention. Encoded audio features interact with their decoded tokenized counterparts through the cross-attention mechanism in the decoder blocks, serving as the key and value vectors to the decoder-supplied query vector. Encoded features are immutable. This means that, for each encoding block, the same computation is regularly recalculated to supply the key and value vectors for cross-attention. It would be recalculated for every sequential, auto-regressively predicted token. Recognizing this inefficiency, researchers cached the attention projection results, offering faster access and significantly accelerating inference.
+Caching is a core tenet of software engineering, utilized to accelerate repetitive function calls by storing their results for easy access. Whisper caches attention mechanism computations that would otherwise be repeatedly recalculated. It implements this through [hooks](https://www.youtube.com/watch?v=syLFCVYua6Q) on attention layers within the model, allowing intermediate values to be recorded for future calls. The primary beneficiary here is cross-attention. Encoded audio features interact with their decoded tokenized counterparts through the cross-attention mechanism in the decoder blocks, serving as the key and value vectors to the decoder-supplied query vector. Encoded features are immutable. For each encoding block the same computation is regularly recalculated to supply the key and value vectors for cross-attention. It is recalculated for every sequential, auto-regressively predicted token. Recognizing this inefficiency, researchers cached the attention projection results, offering faster access and significantly accelerating inference.
 
 Whisper also uses Python's [functools library](https://docs.python.org/3/library/functools.html) to cache repeated calculations. The decorator
 ```
@@ -108,13 +108,15 @@ offers an easy instruction to cache the most recent function return values until
 ```
 @cached_property
 ```
-which caches a singular return value for a function without variable input. These two speed-ups are most effectively employed for Whisper's [tokenizer](https://github.com/openai/whisper/blob/main/whisper/tokenizer.py), responsible for converting numeric values to text. Caching the most frequently called tokens prevents Whisper from reconverting text to its numerical representation, effortlessly speeding up the decoding process.
+which caches a singular return value for a function without variable input. These two speed-ups are most effectively employed for Whisper's [tokenizer](https://github.com/openai/whisper/blob/main/whisper/tokenizer.py), responsible for converting numeric values to text. Caching the most frequently called tokens allows their seamless insertion into the decoding path, greatly accelerating the decoding process.
 
 ### Just In Time (JIT) Compilation
 
-JIT compilers compile code during execution, dynamically analyzing and translating code for faster execution. Whisper employs two JIT compilation libraries for faster runtimes: Numba and Triton. Both are implemented through decorators denoting the function to be optimized. Numba specializes in accelerating numerical computations and requires pure Python syntax. It observes the first function call, allowing it to run normally, before optimizing all future calls for machine code translation. It integrates seamlessly with Numpy, affirming its efficacy for array operations and algorithms.
+JIT compilers compile code during execution, dynamically analyzing and translating code for faster execution. Whisper employs two JIT compilation libraries for faster runtimes: Numba and Triton. Both are implemented through decorators denoting the function to be optimized. Numba specializes in accelerating numerical computations and requires pure Python syntax. It observes the first function call, allowing it to run normally, before optimizing all future calls for machine code translation. It integrates seamlessly with Numpy, underscoring its efficacy for array operations and algorithms.
 
 [Triton](https://www.eecs.harvard.edu/~htk/publication/2019-mapl-tillet-kung-cox.pdf) was released in 2019 and quickly extended by OpenAI as an open-source GPU programming language for highly efficient Deep Learning primitives. Numba is intended for overall numerical efficiency, while Triton is explicitly designed for specialized matrix-multiplication kernels. Designed for Deep Learning applications, it offers a better understanding of GPU architecture and memory control, streamlining elementwise operations and accelerating custom kernels.
+
+Numba is used for CPU version of kernel implementation, Triton used for GPU optimized kernel implementation
 
 # Log-Mel Spectrogram
 
