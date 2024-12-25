@@ -124,10 +124,6 @@ JIT compilers compile code during execution, dynamically analyzing and translati
 
 Numba is used for CPU version of kernel implementation, Triton used for GPU optimized kernel implementation
 
-# Log-Mel Spectrogram
-
-
-
 # Conclusion
 
 
