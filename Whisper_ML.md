@@ -13,7 +13,7 @@ The first step for any encoder is transforming the input media into vectors. In 
 Mel is an alternate unit of frequency, serving as shorthand for melody. Frequency is typically measured in Hertz. This falls short when representing audio in a perceptually relevant format as humans perceive audio logarithmically while Hertz is measured linearly. A log-magnitude Mel spectrogram better captures audio information than a spectrogram with units of Hertz for frequency, so it is the standard input data representation for deep learning applications. The equation for converting between Mel and Hertz is given below, with m for Mel. Log-mel spectrograms are not critical to understanding  Whisper, so this is as much as we'll cover here but, if you're looking for a deeper dive, check out [this video](https://www.youtube.com/watch?v=9GHCiiDLHQ4) or [this article](https://medium.com/analytics-vidhya/understanding-the-mel-spectrogram-fca2afa2ce53) which do a great job of explaining the concept. 
 
 <p align="center" width="100%">
-  <img src="/Images/mel_scale_equation.png" width="100%">
+  <img src="/Images/mel_scale_equation.png" width="40%">
 </p>
 
 The encoder stem is made of two successive convolutional layers each followed by a GELU activation function. The first convolutional layer has a 3x3 kernel with stride of 1 and padding of 1. After passing through the subsequent activation function, the second convolutional layer also has a 3x3 kernel with a stride of 2 and padding of 1. Audio features pass through the second GELU function before progressing to the bulk of the audio encoder. A simple diagram is illustrated below.
