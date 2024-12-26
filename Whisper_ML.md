@@ -2,7 +2,12 @@
 
 # Architecture
 
-As mentioned above, the intention behind Whisper was an empirical examination of the impact weakly supervised, web-scale data would have on speech recognition tasks. For this reason, the authors chose a simplified Transformer network and observed a direct correlation between model performance and model size. Below, we'll briefly summarize the model architecture and its similarity to the original Transformer architecture. For those already familiar with the Transformer model, Whisper's encoder and decoder blocks are [pre-activation residual blocks](https://arxiv.org/pdf/1603.05027).
+As mentioned above, the intention behind Whisper was an empirical examination of the impact weakly supervised, web-scale data would have on speech recognition tasks. For this reason, the authors chose a simplified Transformer network and observed a direct correlation between model performance and model size. Below, we'll briefly summarize the model architecture and its similarity to the original Transformer architecture. Both diagrams are provided below. They should serve as guides, as each block is explained in more detail in later sections. For those already familiar with the Transformer model, Whisper's encoder and decoder blocks are [pre-activation residual blocks](https://arxiv.org/pdf/1603.05027).
+
+<p align="center">
+  <img align="center" src="/Images/transformer_architecture.png" width="40%" /> 
+  <img align="center" src="/Images/whisper_transformer_architecture.png" width="55%" />
+</p>
 
 [Attention Is All You Need](https://arxiv.org/pdf/1706.03762), released in 2017, rapidly accelerated machine learning and artificial intelligence development. Five years later, its sequence-to-sequence efficacy led to OpenAI researchers utilizing it for speech. If you haven't read the original Attention paper, I'd urge you to read it over. It's a well-defined and detailed piece of literature explaining the authors' motivations, experiments, and findings. It directly correlates to the Whisper architecture, with only a slight difference to allow audio compatibility.
 
@@ -118,9 +123,4 @@ JIT compilers compile code during execution, dynamically analyzing and translati
 
 # Conclusion
 
-Summarization of Whisper.
-Researchers set out to measure 
-
-The greatest success of OpenAI since its inception was their emphasis on zero-shot evaluation. If you study machine learning in academia, at least the way I learned it, you're given a training set and a testing set. Maybe you're asked to perform cross-validation, maybe you use a validation set but, odds are likely you're taught to split some quantity of data into some percent for training and the rest for testing. The problem with this, as [observed in section 3.3 of the Whisper paper](https://cdn.openai.com/papers/whisper.pdf#page=5) is that you're really evaluating the model's ability to capture in-distribution trends. All of the training and testing data, provided they come from the same source, come from the same distribution. Models shouldn't be evaluated on their ability to capture in-distribution trends, especially when neural networks have demonstrated a [propensity for picking up idiosyncrasies invisible to humans](https://arxiv.org/pdf/2103.00020). Robust models should generalize well to out-of-distribution data and that should be the basis of their evaluation. This is a significant motivation behind the evaluation of Whisper and underpins OpenAI's other model releases including Dall-E and GPT. This all obviously comes with the acknowledgement that it is researchers' responsibility to prevent data contamination and ensure that zero-shot evaluation is in fact evaluation on previously unseen data.
-
-Something about dataset contamination.
+Researchers created a multilingual, multitask automated speech recognition model using the Transformer architecture trained on a large, weakly supervised dataset. They evaluated their model zero-shot, observed the mitigation of negative transfer with larger models, and implemented multiple strategies to limit hallucination. Through careful data filtering and run-time optimizations, they generated higher quality pre-training data and accelerated the inference process. Whisper became a robust SOTA open-source model, successfully generalizing to previously unseen data.
